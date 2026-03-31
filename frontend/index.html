@@ -4,73 +4,35 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI 背景去除 - 免费在线抠图</title>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: #f5f5f7;
     color: #1d1d1f;
     min-height: 100vh;
   }
-
   header {
     background: #fff;
     border-bottom: 1px solid #e5e5e5;
     padding: 16px 24px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-  }
-  .header-left { display: flex; align-items: center; gap: 12px; }
-  header h1 { font-size: 20px; font-weight: 700; }
-  header span { font-size: 13px; color: #888; }
-  
-  #user-info {
-    display: none;
-    align-items: center;
     gap: 12px;
   }
-  #user-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-  }
-  #user-name {
-    font-size: 14px;
-    font-weight: 500;
-  }
-  #logout-btn {
-    padding: 6px 16px;
-    background: #e5e5e5;
-    border: none;
-    border-radius: 16px;
-    font-size: 13px;
-    cursor: pointer;
-  }
-
+  header h1 { font-size: 20px; font-weight: 700; }
+  header span { font-size: 13px; color: #888; }
   main {
     max-width: 900px;
     margin: 40px auto;
     padding: 0 20px;
   }
-
-  /* Login Screen */
-  #login-screen {
-    text-align: center;
-    padding: 80px 20px;
-  }
-  #login-screen h2 { font-size: 36px; font-weight: 800; margin-bottom: 16px; }
-  #login-screen p { font-size: 16px; color: #555; margin-bottom: 32px; }
-
   .hero {
     text-align: center;
     margin-bottom: 36px;
   }
   .hero h2 { font-size: 36px; font-weight: 800; margin-bottom: 10px; }
   .hero p { font-size: 16px; color: #555; }
-
   #drop-zone {
     border: 2px dashed #c0c0c0;
     border-radius: 16px;
@@ -102,7 +64,6 @@
   }
   #drop-zone .btn-upload:hover { background: #0077ed; }
   #file-input { display: none; }
-
   #processing {
     display: none;
     text-align: center;
@@ -119,14 +80,12 @@
     margin: 0 auto 16px;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-
   #result {
     display: none;
     background: #fff;
     border-radius: 16px;
     overflow: hidden;
   }
-
   .compare {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -163,7 +122,6 @@
     border-radius: 8px;
     display: inline-block;
   }
-
   .result-actions {
     padding: 20px 24px;
     display: flex;
@@ -183,7 +141,6 @@
   .btn:hover { opacity: 0.85; }
   .btn-primary { background: #0071e3; color: #fff; }
   .btn-secondary { background: #e5e5e5; color: #1d1d1f; }
-
   #error-msg {
     display: none;
     background: #fff2f2;
@@ -194,9 +151,6 @@
     font-size: 14px;
     margin-top: 16px;
   }
-
-  #app-content { display: none; }
-
   @media (max-width: 600px) {
     .compare { grid-template-columns: 1fr; }
     .hero h2 { font-size: 26px; }
@@ -206,120 +160,56 @@
 <body>
 
 <header>
-  <div class="header-left">
-    <div style="font-size:28px">✂️</div>
-    <div>
-      <h1>BG Remover</h1>
-      <span>Powered by remove.bg</span>
-    </div>
-  </div>
-  <div id="user-info">
-    <img id="user-avatar" src="" alt="用户头像">
-    <span id="user-name"></span>
-    <button id="logout-btn" onclick="logout()">退出</button>
+  <div style="font-size:28px">✂️</div>
+  <div>
+    <h1>BG Remover</h1>
+    <span>Powered by remove.bg</span>
   </div>
 </header>
 
 <main>
-  <!-- Login Screen -->
-  <div id="login-screen">
-    <h2>🎨 AI 背景去除工具</h2>
-    <p>登录后即可使用一键抠图功能</p>
-    <div id="g_id_onload"
-         data-client_id="69982868477-h1739638fr1sbk1bkn08q2hvmni9i5fr.apps.googleusercontent.com"
-         data-callback="handleCredentialResponse">
-    </div>
-    <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"></div>
+  <div class="hero">
+    <h2>一键去除图片背景</h2>
+    <p>上传图片，AI 自动抠图，秒级完成，免费下载 PNG</p>
   </div>
 
-  <!-- App Content -->
-  <div id="app-content">
-    <div class="hero">
-      <h2>一键去除图片背景</h2>
-      <p>上传图片，AI 自动抠图，秒级完成，免费下载 PNG</p>
-    </div>
-
-    <div id="drop-zone">
-      <div class="icon">🖼️</div>
-      <h3>拖拽图片到这里</h3>
-      <p>支持 JPG、PNG、WebP，最大 12MB</p>
-      <button class="btn-upload" onclick="document.getElementById('file-input').click()">选择图片</button>
-      <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp">
-    </div>
-
-    <div id="processing">
-      <div class="spinner"></div>
-      <p style="font-size:16px;color:#555">正在处理，请稍候...</p>
-    </div>
-
-    <div id="result">
-      <div class="compare">
-        <div class="compare-panel">
-          <label>原图</label>
-          <img id="original-img" src="" alt="原图">
-        </div>
-        <div class="compare-panel">
-          <label>去背景</label>
-          <div class="result-img-wrap">
-            <img id="result-img" src="" alt="去背景结果">
-          </div>
-        </div>
-      </div>
-      <div class="result-actions">
-        <a id="download-btn" class="btn btn-primary" download="removed-bg.png">⬇️ 下载 PNG</a>
-        <button class="btn btn-secondary" onclick="reset()">重新上传</button>
-      </div>
-    </div>
-
-    <div id="error-msg"></div>
+  <div id="drop-zone">
+    <div class="icon">🖼️</div>
+    <h3>拖拽图片到这里</h3>
+    <p>支持 JPG、PNG、WebP，最大 12MB</p>
+    <button class="btn-upload" onclick="document.getElementById('file-input').click()">选择图片</button>
+    <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp">
   </div>
+
+  <div id="processing">
+    <div class="spinner"></div>
+    <p style="font-size:16px;color:#555">正在处理，请稍候...</p>
+  </div>
+
+  <div id="result">
+    <div class="compare">
+      <div class="compare-panel">
+        <label>原图</label>
+        <img id="original-img" src="" alt="原图">
+      </div>
+      <div class="compare-panel">
+        <label>去背景</label>
+        <div class="result-img-wrap">
+          <img id="result-img" src="" alt="去背景结果">
+        </div>
+      </div>
+    </div>
+    <div class="result-actions">
+      <a id="download-btn" class="btn btn-primary" download="removed-bg.png">⬇️ 下载 PNG</a>
+      <button class="btn btn-secondary" onclick="reset()">重新上传</button>
+    </div>
+  </div>
+
+  <div id="error-msg"></div>
 </main>
 
 <script>
-  const WORKER_URL = 'https://bg-remover-worker.<your-subdomain>.workers.dev/remove-bg';
-  
-  let currentUser = null;
-
-  // Google OAuth Callback
-  function handleCredentialResponse(response) {
-    const token = response.credential;
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    
-    currentUser = {
-      name: payload.name,
-      email: payload.email,
-      picture: payload.picture
-    };
-    
-    localStorage.setItem('user', JSON.stringify(currentUser));
-    showApp();
-  }
-
-  function showApp() {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app-content').style.display = 'block';
-    document.getElementById('user-info').style.display = 'flex';
-    document.getElementById('user-name').textContent = currentUser.name;
-    document.getElementById('user-avatar').src = currentUser.picture;
-  }
-
-  function logout() {
-    localStorage.removeItem('user');
-    currentUser = null;
-    document.getElementById('login-screen').style.display = 'block';
-    document.getElementById('app-content').style.display = 'none';
-    document.getElementById('user-info').style.display = 'none';
-    reset();
-  }
-
-  // Check if already logged in
-  window.addEventListener('load', () => {
-    const saved = localStorage.getItem('user');
-    if (saved) {
-      currentUser = JSON.parse(saved);
-      showApp();
-    }
-  });
+  const WORKER_URL = 'https://bg-remover-worker.zcm20010703.workers.dev/remove-bg';
 
   const dropZone = document.getElementById('drop-zone');
   const fileInput = document.getElementById('file-input');
@@ -337,62 +227,57 @@
     if (fileInput.files[0]) handleFile(fileInput.files[0]);
   });
 
+  function showError(msg) {
+    const el = document.getElementById('error-msg');
+    el.textContent = '❌ ' + msg;
+    el.style.display = 'block';
+  }
+
+  function reset() {
+    document.getElementById('drop-zone').style.display = 'block';
+    document.getElementById('processing').style.display = 'none';
+    document.getElementById('result').style.display = 'none';
+    document.getElementById('error-msg').style.display = 'none';
+    fileInput.value = '';
+  }
+
   async function handleFile(file) {
-    if (!file.type.match(/image\/(jpeg|png|webp)/)) {
-      showError('仅支持 JPG、PNG、WebP 格式');
-      return;
-    }
-    if (file.size > 12 * 1024 * 1024) {
-      showError('图片大小不能超过 12MB');
-      return;
-    }
+    if (!file.type.startsWith('image/')) return showError('请上传图片文件');
+    if (file.size > 12 * 1024 * 1024) return showError('图片大小不能超过 12MB');
+
+    const originalUrl = URL.createObjectURL(file);
+    document.getElementById('original-img').src = originalUrl;
 
     document.getElementById('drop-zone').style.display = 'none';
-    document.getElementById('processing').style.display = 'block';
     document.getElementById('error-msg').style.display = 'none';
+    document.getElementById('processing').style.display = 'block';
 
     try {
-      const formData = new FormData();
-      formData.append('image', file);
+      const form = new FormData();
+      form.append('image', file);
 
-      const res = await fetch(WORKER_URL, {
-        method: 'POST',
-        body: formData
-      });
+      const res = await fetch(WORKER_URL, { method: 'POST', body: form });
 
       if (!res.ok) {
-        const err = await res.json();
+        const err = await res.json().catch(() => ({ error: res.statusText }));
         throw new Error(err.error || '处理失败');
       }
 
       const blob = await res.blob();
       const resultUrl = URL.createObjectURL(blob);
 
-      document.getElementById('original-img').src = URL.createObjectURL(file);
       document.getElementById('result-img').src = resultUrl;
       document.getElementById('download-btn').href = resultUrl;
 
       document.getElementById('processing').style.display = 'none';
       document.getElementById('result').style.display = 'block';
+
     } catch (err) {
       document.getElementById('processing').style.display = 'none';
       document.getElementById('drop-zone').style.display = 'block';
       showError(err.message);
     }
   }
-
-  function reset() {
-    document.getElementById('result').style.display = 'none';
-    document.getElementById('drop-zone').style.display = 'block';
-    fileInput.value = '';
-  }
-
-  function showError(msg) {
-    const el = document.getElementById('error-msg');
-    el.textContent = '❌ ' + msg;
-    el.style.display = 'block';
-  }
 </script>
-
 </body>
 </html>
