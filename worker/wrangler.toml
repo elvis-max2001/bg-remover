@@ -1,7 +1,11 @@
 name = "bg-remover-worker"
-main = "index.js"
+main = "src/index.js"
 compatibility_date = "2024-01-01"
 
 [vars]
-# 在 Cloudflare Dashboard 的 Workers > Settings > Variables 里设置
-# REMOVE_BG_API_KEY = "9CjVngNHq9FwezUA3xtCBYVj"
+REMOVE_BG_API_KEY = "9CjVngNHq9FwezUA3xtCBYVj"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "bg-remover-db"
+database_id = "ddd90e1b-d269-447b-824f-a3e320b7fa92"
