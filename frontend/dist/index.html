@@ -216,6 +216,7 @@
   <div id="user-info">
     <img id="user-avatar" src="" alt="用户头像">
     <span id="user-name"></span>
+    <a href="/profile.html" style="margin-left:12px;text-decoration:none;color:#0071e3">个人中心</a>
     <button id="logout-btn" onclick="logout()">退出</button>
   </div>
 </header>
@@ -281,17 +282,30 @@
   let currentUser = null;
 
   // Google OAuth Callback
-  function handleCredentialResponse(response) {
+  async function handleCredentialResponse(response) {
     const token = response.credential;
     const payload = JSON.parse(atob(token.split('.')[1]));
     
     currentUser = {
+      id: payload.sub,
       name: payload.name,
       email: payload.email,
       picture: payload.picture
     };
     
     localStorage.setItem('user', JSON.stringify(currentUser));
+    localStorage.setItem('auth_token', token);
+    
+    // 创建/更新用户记录
+    await fetch(WORKER_URL.replace('/remove-bg', '/api/user/init'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(currentUser)
+    });
+    
     showApp();
   }
 
@@ -355,8 +369,12 @@
       const formData = new FormData();
       formData.append('image', file);
 
+      const token = localStorage.getItem('auth_token');
       const res = await fetch(WORKER_URL, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData
       });
 

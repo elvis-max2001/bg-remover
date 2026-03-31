@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>订阅套餐 - BG Remover</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f5f5f7;
+    color: #1d1d1f;
+  }
+  header {
+    background: #fff;
+    border-bottom: 1px solid #e5e5e5;
+    padding: 16px 24px;
+  }
+  .logo { font-size: 20px; font-weight: 700; }
+  main {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+  h1 { text-align: center; font-size: 36px; margin-bottom: 40px; }
+  .plans {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  .plan {
+    background: #fff;
+    border-radius: 12px;
+    padding: 32px;
+    text-align: center;
+  }
+  .plan.featured {
+    border: 2px solid #0071e3;
+  }
+  .plan h2 { font-size: 24px; margin-bottom: 8px; }
+  .plan .price {
+    font-size: 48px;
+    font-weight: 700;
+    margin: 16px 0;
+  }
+  .plan .price span { font-size: 20px; color: #888; }
+  .plan ul {
+    list-style: none;
+    margin: 24px 0;
+    text-align: left;
+  }
+  .plan li {
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .btn {
+    width: 100%;
+    padding: 12px;
+    background: #0071e3;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .btn:hover { background: #0077ed; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">✂️ BG Remover</div>
+</header>
+<main>
+  <h1>选择适合你的套餐</h1>
+  <div class="plans">
+    <div class="plan">
+      <h2>免费版</h2>
+      <div class="price">$0<span>/月</span></div>
+      <ul>
+        <li>✓ 注册送 3 次</li>
+        <li>✓ 基础功能</li>
+      </ul>
+      <button class="btn" disabled>当前套餐</button>
+    </div>
+    <div class="plan featured">
+      <h2>基础版</h2>
+      <div class="price">$9.99<span>/月</span></div>
+      <ul>
+        <li>✓ 每月 100 次</li>
+        <li>✓ 高清输出</li>
+        <li>✓ 优先处理</li>
+      </ul>
+      <button class="btn" onclick="subscribe('basic')">立即订阅</button>
+    </div>
+    <div class="plan">
+      <h2>专业版</h2>
+      <div class="price">$29.99<span>/月</span></div>
+      <ul>
+        <li>✓ 每月 500 次</li>
+        <li>✓ 批量处理</li>
+        <li>✓ API 访问</li>
+      </ul>
+      <button class="btn" onclick="subscribe('pro')">立即订阅</button>
+    </div>
+  </div>
+</main>
+<script>
+async function subscribe(plan) {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    alert('请先登录');
+    window.location.href = '/';
+    return;
+  }
+  const res = await fetch('https://bg-remover-worker.zcm20010703.workers.dev/api/subscribe', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ plan })
+  });
+  const data = await res.json();
+  if (data.success) {
+    alert('订阅成功！');
+    window.location.href = '/profile.html';
+  } else {
+    alert('订阅失败：' + data.error);
+  }
+}
+</script>
+</body>
+</html>
