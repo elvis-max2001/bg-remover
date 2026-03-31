@@ -60,3 +60,4 @@ const WORKER_URL = 'https://bg-remover-worker.<your-subdomain>.workers.dev/remov
 1. 注册 https://www.remove.bg/
 2. 进入 Account → API Keys
 3. 免费额度：50次/月（够测试用）
+# Force rebuild
